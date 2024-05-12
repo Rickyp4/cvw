@@ -18,7 +18,7 @@ module cacherand
   output logic [NUMWAYS-1:0]  VictimWay        // LRU selects a victim to evict
 );
 
-    localparam                      LOGNUMWAYS = $clog2(NUMWAYS);
+    localparam                      LOGNUMWAYS = log2(NUMWAYS);
 
     logic [LOGNUMWAYS+1:0]          next;
     logic [LOGNUMWAYS+1:0]          val;
