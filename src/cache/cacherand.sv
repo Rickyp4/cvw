@@ -20,7 +20,9 @@ module cacherand
 
     localparam                      LOGNUMWAYS = $clog2(NUMWAYS);
 
-    logic [LOGNUMWAYS+1:0]          next, val, curr;
+    logic [LOGNUMWAYS+1:0]          next;
+    logic [LOGNUMWAYS+1:0]          val;
+    logic [LOGNUMWAYS+1:0]          curr;
 
 
     logic                           AllValid;
@@ -31,7 +33,7 @@ module cacherand
     // LSFR Module
     flopen #(LOGNUMWAYS+2) LSFReg (clk, reset, 1'b1, next, val, curr)
 
-    next[LOGNUMWAYS:0] = curr[LOGNUMWAYS+1:1];
+    assign next[LOGNUMWAYS:0] = curr[LOGNUMWAYS+1:1];
     if ((LOGNUMWAYS+2) == 3) begin
         assign next[2] = curr[2] ^ curr[0];
     end else if ((LOGNUMWAYS+2) == 4) begin
