@@ -1,10 +1,21 @@
 // Random cache with LSFR
 
-module cacherand import cvw::*; #(parameter cvw_t P,
-                              parameter PA_BITS, XLEN, LINELEN,  NUMLINES,  NUMWAYS, LOGBWPL, WORDLEN, MUXINTERVAL, READ_ONLY_CACHE) (
-    input  logic                 clk, reset, FlushStage, LRUWriteEn,
-                                 ValidWay
-    output logic [NUMWAYS-1:0]   VictimWay
+module cacherand
+    #(parameter NUMWAYS = 4, SETLEN = 9, OFFSETLEN = 5, NUMLINES = 128) (
+  input  logic                clk, 
+  input  logic                reset,
+  input  logic                FlushStage,
+  input  logic                CacheEn,         // Enable the cache memory arrays.  Disable hold read data constant
+  input  logic [NUMWAYS-1:0]  HitWay,          // Which way is valid and matches PAdr's tag
+  input  logic [NUMWAYS-1:0]  ValidWay,        // Which ways for a particular set are valid, ignores tag
+  input  logic [SETLEN-1:0]   CacheSetData,    // Cache address, the output of the address select mux, NextAdr, PAdr, or FlushAdr
+  input  logic [SETLEN-1:0]   CacheSetTag,     // Cache address, the output of the address select mux, NextAdr, PAdr, or FlushAdr
+  input  logic [SETLEN-1:0]   PAdr,            // Physical address 
+  input  logic                LRUWriteEn,      // Update the LRU state
+  input  logic                SetValid,        // Set the dirty bit in the selected way and set
+  input  logic                ClearValid,      // Clear the dirty bit in the selected way and set
+  input  logic                InvalidateCache, // Clear all valid bits
+  output logic [NUMWAYS-1:0]  VictimWay        // LRU selects a victim to evict
 );
 
     localparam                      LOGNUMWAYS = $clog2(NUMWAYS);
@@ -18,7 +29,7 @@ module cacherand import cvw::*; #(parameter cvw_t P,
     logic [LOGNUMWAYS-1:0]          VictimWayEnc;
 
     // LSFR Module
-    flopenr #(LOGNUMWAYS+2) LSFReg (clk, reset, 1'b1, next, val, curr)
+    flopen #(LOGNUMWAYS+2) LSFReg (clk, reset, 1'b1, next, val, curr)
 
     assign next[LOGNUMWAYS:0] = curr[LOGNUMWAYS+1:1];
     if ((LOGNUMWAYS+2) == 3) begin
