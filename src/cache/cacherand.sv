@@ -31,7 +31,7 @@ module cacherand
     logic [LOGNUMWAYS-1:0]          VictimWayEnc;
 
     // LSFR Module
-    flopen #(LOGNUMWAYS+2) LSFReg (clk, reset, 1'b1, next, val, curr)
+    flopenL #(LOGNUMWAYS+2) LSFReg (clk, reset, 1'b1, next, val, curr)
 
     assign next[LOGNUMWAYS:0] = curr[LOGNUMWAYS+1:1];
     if ((LOGNUMWAYS+2) == 3) begin
